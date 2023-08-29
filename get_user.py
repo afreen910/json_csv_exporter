@@ -18,9 +18,12 @@ URL = "https://reqres.in/api/users"
 class Users:
 
     def get_page_count(self, url):
-        response = requests.get(url)
-        page_count = response.json()['total_pages']
-        return page_count
+        try:
+            response = requests.get(url)
+            page_count = response.json()['total_pages']
+            return page_count
+        except:
+            logger.error('get_page_count() - Failed to make a GET request')
 
     def get_all_data(self, url):
         page_count = self.get_page_count(url)
@@ -45,27 +48,9 @@ if __name__ == '__main__':
 
     # Create a custom logger
     logger = logging.getLogger(__name__)
-
-    # Create handlers
-    # c_handler = logging.StreamHandler()
-    # f_handler = logging.FileHandler('file.log')
-    # c_handler.setLevel(logging.WARNING)
-    # f_handler.setLevel(logging.ERROR)
-    #
-    # # Create formatters and add it to handlers
-    # c_format = logging.Formatter('%(name)s - %(levelname)s - %(message)s')
-    # f_format = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    # c_handler.setFormatter(c_format)
-    # f_handler.setFormatter(f_format)
-    #
-    # # Add handlers to the logger
-    # logger.addHandler(c_handler)
-    # logger.addHandler(f_handler)
-
     logger.info('get_user.py user is the main caller')
     from csv_export import export_to_csv
-
     user_object = Users()
     result = user_object.get_all_data(URL)
-    print(result)
+    export_to_csv(result)
     logger.info('DONE')
